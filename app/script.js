@@ -22,33 +22,46 @@ const App = () => {
     if(time === 0 && timer) {
       clearInterval(timer);
       setTimer(null);
-    
+      
       if(status === 'work') {
         setStatus('rest');
-        setTime(10);
+        setTime(5);
         startNewTimer();
       } else if(status === 'rest') {
         setStatus('work');
-        setTime(15);
+        setTime(5);
         startNewTimer();
       }
     }
   },[time]);
 
+  const playBell = () => {
+    const playAudio = new Audio('./sounds/bell.wav');
+    playAudio.play();
+  }
+
   const startNewTimer = () => {
     setTimer(setInterval(() => {
       setTime(time => time -1);
-    },1000))
+    },1000));
   }
 
   const startTimer = () => {
-    setTime(15);
+    setTime(5);
     setStatus('work');
+    playBell();
     startNewTimer();
   };
 
   const stopTimer = () => {
-    
+    clearInterval(timer);
+    setStatus('off');
+    setTime(0);
+    playBell();
+  }
+
+  const closeWindow = () => {
+    window.close();
   }
 
   let content = '';
@@ -65,7 +78,7 @@ const App = () => {
     <div>
       <img src="./images/work.png" />
       <div className="timer">{formatTime()}</div>
-      <button className="btn">Stop</button>
+      <button className="btn" onClick={stopTimer} >Stop</button>
     </div>
     
   } else if(status === 'rest') {
@@ -73,7 +86,7 @@ const App = () => {
     <div>
       <img src="./images/rest.png" />
       <div className="timer">{formatTime()}</div>
-      <button className="btn">Stop</button>
+      <button className="btn" onClick={stopTimer} >Stop</button>
     </div>
   } 
 
@@ -81,7 +94,7 @@ const App = () => {
     <div>
       <h1>Protect your eyes</h1>
       {content}
-      <button className="btn btn-close">X</button>
+      <button className="btn btn-close" onClick={closeWindow}>X</button>
     </div>
   )
 };
