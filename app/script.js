@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 
 const App = () => {
@@ -8,7 +8,7 @@ const App = () => {
   const [time, setTime] = useState(0);
   const [timer, setTimer] = useState(null);
   
-  const formatTime = useMemo(() => {
+  const formatTime = () => {
     let minutes = Math.floor(time / 60);
     let seconds = Math.ceil(time % 60);
     
@@ -16,19 +16,39 @@ const App = () => {
     seconds = seconds < 10 ? "0" + seconds : seconds;
 
     return `${minutes}:${seconds}`
-  }, [time]);
-
-  const startTimer = () => {
-    setTime(1200);
-    setStatus('work');
-    setTimer(setInterval(() => {
-      setTime(time => time - 1);
-    }, 1000));
   };
 
-  if(time === 1190) {
-    setStatus('rest');
-    setTime(20);
+  useEffect(() => {
+    if(time === 0 && timer) {
+      clearInterval(timer);
+      setTimer(null);
+    
+      if(status === 'work') {
+        setStatus('rest');
+        setTime(10);
+        startNewTimer();
+      } else if(status === 'rest') {
+        setStatus('work');
+        setTime(15);
+        startNewTimer();
+      }
+    }
+  },[time]);
+
+  const startNewTimer = () => {
+    setTimer(setInterval(() => {
+      setTime(time => time -1);
+    },1000))
+  }
+
+  const startTimer = () => {
+    setTime(15);
+    setStatus('work');
+    startNewTimer();
+  };
+
+  const stopTimer = () => {
+    
   }
 
   let content = '';
@@ -44,7 +64,7 @@ const App = () => {
     content = 
     <div>
       <img src="./images/work.png" />
-      <div className="timer">{formatTime}</div>
+      <div className="timer">{formatTime()}</div>
       <button className="btn">Stop</button>
     </div>
     
@@ -52,7 +72,7 @@ const App = () => {
     content = 
     <div>
       <img src="./images/rest.png" />
-      <div className="timer">{formatTime}</div>
+      <div className="timer">{formatTime()}</div>
       <button className="btn">Stop</button>
     </div>
   } 
